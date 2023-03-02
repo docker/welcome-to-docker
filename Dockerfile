@@ -1,5 +1,5 @@
 # Start your image with a node base image
-FROM node:19-slim
+FROM node:18-alpine
 
 # Create an application directory
 RUN mkdir -p /app
