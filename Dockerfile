@@ -1,5 +1,5 @@
 # Start your image with a node base image
-FROM node:18-alpine
+FROM node:18-alpine as builder
 
 # Create an application directory
 RUN mkdir -p /app
@@ -16,9 +16,8 @@ COPY ./public ./public
 
 # Install node packages, install serve, build the app, and remove dependencies at the end
 RUN npm install \
-    && npm install -g serve \
-    && npm run build \
-    && rm -fr node_modules
+    && npm run build
 
-# Start the app using serve command
-CMD [ "serve", "-s", "build" ]
+# Use a slim nginx image to reduce our image size drastically
+FROM nginx:alpine-slim
+COPY --from=builder /app/build /usr/share/nginx/html
