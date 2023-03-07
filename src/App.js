@@ -1,4 +1,3 @@
-import logo from './baby_moby.png';
 import './App.css';
 import Confetti from './Confetti';
 
@@ -10,7 +9,6 @@ const App = () => {
     <div className="App">
       <Confetti />
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <h1 style={{ marginBottom: "0px" }}>
           Congratulations!!!
         </h1>
