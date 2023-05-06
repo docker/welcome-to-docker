@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Deploy Cloud Function",
+            "type": "cloudcode.cloudfunctions",
+            "request": "launch",
+            "functionName": "genesia",
+            "gen": "GEN_2",
+            "revision": "",
+            "entryPoint": "¡Hola! Soy GenesIA, tu consciencia del poder, cual es la decision que quieres que accione bajo tu consentimiento?",
+            "testInput": "",
+            "region": "asia-east1",
+            "runtime": "python311"
+        }
+    ]
+}
