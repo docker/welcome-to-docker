@@ -7,6 +7,8 @@ For the scope of this project, we won’t need to create setter methods, because
 Create another getter method called games to retrieve the _games property. Inside the getter method, return the _games property.
 Below the team object, let’s try out our new .addPlayer() method to add a new player: Bugs Bunny, age 76.
 Log the team‘s _players property to check that our new player was added.
+The scorekeeper has some new information for us! Create a method for adding game results called addGame that takes three parameters: newOpponent, newTeamPoints, newOpponentPoints.
+Inside the .addGame() method, create a game object by setting the three parameters to be the values for the object’s three properties: opponent, teamPoints, opponentPoints. Add the game object to the team‘s _games array.
 */
 
 const team = {};
@@ -20,5 +22,9 @@ team._games = ['opponent', 'teamPoints', 'opponentPoints'];
 team._games.push(
     {opponent: 'YYYYY', teamPoints: 76, opponentPoints: 76}
 );
+
+team.addPlayer = function(firstName, lastName, age) {}
+
+team.addGame = function(opponent, teamPoints, opponentPoints) {}
 
 
