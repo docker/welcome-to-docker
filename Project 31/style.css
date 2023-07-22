@@ -1,0 +1,116 @@
+/* Universal Styles */
+
+html {
+    font-size: 16px;
+  }
+  p {
+    min-width: 200px;
+    min-height: 200px;
+  }
+  body {
+    background-color: white;
+  }
+  
+  .image-container {
+    overflow:  hidden;
+  }
+  
+  .image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Banner Section */
+  
+  #banner {
+    
+    background-image: url('https://wallpapercave.com/wp/vGmrnXH.jpg');
+    background-position: center;
+    
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 46rem;
+    background-size: cover;
+  }
+  
+  #banner h1 {
+    
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    color: white;
+    font-size: 3.75rem;
+  }
+  
+  /* Blog Post */
+  
+  #blog {
+    
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 86%;
+  }
+  
+  #blog .post {
+    width: 52%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Merriweather', serif;
+    font-weight: 300;
+    font-size: 1rem;
+    text-align: center;
+    line-height: 1.8;
+    color: #444444;
+    margin-top: 12.5%;
+    margin-bottom: 7.5%;
+  }
+  
+  .post h2 {
+    font-size: 1.875em; 
+  }
+  
+  .post h3 {
+    font-size: 1.125rem;
+    color: #999999;
+  }
+  
+  .post .opening-line {
+    margin-top: 4.1875rem;
+    margin-bottom: 1.5rem;
+    color: black;
+    font-weight: bold;
+  }
+  
+  .post .image-container {
+    width: 100%; 
+  }
+  
+  /* Blog Images */
+  
+  .images {
+   width: 50%;
+   margin-bottom: 20%; 
+  }
+  
+  .images .image-container {
+    display: inline-block;
+    width: 50%;
+  }
+  
+  /* Footer */
+  
+  footer {
+    padding: 4rem 0;
+    border-top: 1px solid #999999;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.125rem;
+    
+    color: #999999;
+    text-align: center;
+  }

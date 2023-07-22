@@ -1,0 +1,155 @@
+html,
+body {
+  font-family: Helvetica, sans-serif;
+  font-size: 16px;
+  margin: 0;
+  background-color: white;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.main {
+  height: 30rem;
+  padding-top: 1rem;
+  background-image: url('https://content.codecademy.com/courses/freelance-1/unit-5/tsunami-coffee/images/bg-photo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.main img {
+  width: 15rem;
+  display: block;
+  margin: auto;
+  margin-top: 5rem;
+}
+
+nav {
+  background-color: OrangeRed;
+  color: White;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+}
+
+li {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+}
+
+.supporting,
+.rating,
+.gallery,
+.location {
+  margin: 4em auto;
+}
+
+.supporting {
+  display: flex;
+  align-items: flex-start;
+  padding: 0 1rem;
+}
+
+.supporting img {
+    width: 10%;
+    margin-right: 5%;
+}
+
+.rating {
+  background-color: OrangeRed;
+  height: 20rem;
+  padding: 0 1rem;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rating h1 {
+    font-size: 2.5rem;
+/*because the root font size is 16pxs this will be 2.5 
+rem since 2.5 x 16 which will provide anequivalent font size to 40px */
+}
+
+.gallery img {
+  display: block;
+  width: 30%;
+  margin: 1.5%;
+  float: left;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.location {
+  text-align: center;
+  margin-bottom: 7rem;
+}
+
+.location img {
+    width: 100%;
+}
+
+footer {
+  background-color: OrangeRed;
+  padding: 0 1rem;
+}
+
+footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5em 0;
+  color: white;
+}
+
+@media only screen and (max-width: 960px) {
+  .main {
+    padding-top: 0;
+  }
+}
+/*Now the page looks better on large screens. 
+When the page is resized to a smaller width, 
+the page needs to resize and reorganize its elements using media queries.
+Write a media query that targets the screen when its width is under 960 pixels and smaller.*/
+
+@media only screen and (max-width: 700px) {
+  .supporting img {
+    display: none;
+  }
+}
+/*Resize the browser from large to small. Notice that the coffee beans 
+image in the supporting section causes the supporting paragraph to become too thin.
+Write a media query for screens under 700 pixels.*/
+
+@media only screen and (max-width: 470px) {
+  /*Continue to resize the width of the browser until the website is the size of a small screen.
+Write a media query that targets a screen width less than 470 pixels.*/
+.rating h1 {
+    font-size: 2rem;
+  }
+
+.gallery img {
+  width: 100%;
+  margin: 0;
+}
+/*The images in the gallery are too small for small screens.
+Select the images in the gallery and style them so that they fill the width of the screen.
+Then set their margin to 0 so they span across the entire page.*/
+
+footer nav {
+  display: none;
+}
+/*The footer’s text is not formatted correctly on small screen sizes.
+Hide the nav inside the footer to appear better on small screens.
+Then, resize the screen from small to large and watch your website change 
+its appearance to best fit the screen size. You just built a responsive website!*/
+}
+
+

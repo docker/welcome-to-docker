@@ -1,0 +1,157 @@
+body {
+    background-color: #fcfcfc;
+    color: #db6363;
+    text-align: center;
+  }
+  
+  .grid {
+    display: grid;
+    /*grid-template-rows: 100px 8fr 5fr 4fr 5fr 80px;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;*/
+    /*
+    Next, to specify the number and size of the rows, inside the .grid ruleset, 
+    use the grid-template-rows property with a value of: 100px 8fr 5fr 4fr 5fr 80px. What changes do you see?*/
+    /*
+    Next, to specify the number and size of the rows, inside the .grid ruleset, 
+    use the grid-template-rows property with a value of: 100px 8fr 5fr 4fr 5fr 80px. What changes do you see?*/
+    grid-template: 100px 8fr 5fr 4fr 5fr 80px / repeat(6, 1fr);
+    /*The code you added in the last two steps can be refactored into one shorthand grid-template property.
+    First, add the grid-template property to the .grid ruleset.
+    Next, cut the values from the grid-template-rows and grid-templates-columns properties, 
+    and paste them as values for the new grid-template property.
+    Then, delete the old grid-template-rows and grid-templates-columns declarations.
+    Finally, the grid-templates-columns value can be refactored even further. 
+    Use the repeat() function to refactor the 6 1fr values.*/ 
+    grid-column-gap: 20px;
+    /* Let’s give our content some wiggle room. Return to the .grid ruleset, add a gap property, 
+    and set its value to 20 pixels. Notice which parts of the page have changed.*/
+  }
+  
+  header {
+    grid-column: 1 / 7; 
+   /* Now, let’s fix that broken page layout. The content in the following rulesets needs to extend across all six columns:
+    header
+    .banner
+    .about
+    footer
+    Add the grid-column-start and grid-column-end properties to these rulesets, 
+    with values that start the content at the the first column and end it at the sixth column.*/
+    display: grid;
+    /*Lastly, the <p> elements inside of the grid boxes aren’t centered. 
+    There are some fun ways to deal with this using some advanced CSS grid properties 
+    that you’ll soon learn about. In the meantime, one way we can take care of it with knowledge 
+    we already have is to make each of the boxes its own grid! Since each <p> element has a margin: auto declaration,
+    they will be centered inside grid container.To turn the boxes with the <p> elements into grids,
+    use the display properties in the below rulesets to turn them into grids:
+    header
+    .about
+    .box
+    .testimonial
+    footer*/
+  }
+  
+  .title {
+    margin: auto;
+    color: #dc6363;
+    font-family: Poppins;
+    font-size: 2em;
+    font-weight: 700;
+  }
+  
+  .banner {
+    padding: 3%;
+    background-color: #db6363;
+    color: #ffffff;
+    font-family: Poppins;
+    font-size: 3em;
+    font-weight: 300;
+    letter-spacing: 3.7px;
+    grid-column: 1 / 7;
+  }
+  
+  p, .banner-contents {
+    max-width: 80%;
+    margin: auto;
+  }
+  
+  img {
+    height: 5em;
+    margin-left: 75px;
+  }
+  
+  .about {
+    background-color: #f0f0f0;
+    grid-column: 1 / 7;
+    display: grid;
+  
+  }
+  
+  .text {
+    color: #2f2d2d;
+    font-family: Poppins;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  
+  .box {
+    background-color: #2f2f2f;
+    color: #ffffff;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-align: center;
+    display: grid;
+  }
+  
+  .address {
+    grid-column: 1 / span 2;
+    /*The grid-column-start and grid-column-end properties can also be written as a shorthand property. 
+    Using the grid-column property and the span keyword, make:
+    .address span the first 2 columns
+    .hours span the 3rd and 4th columns
+    .call-us span the 5th and 6th columns*/
+  }
+  
+  .hours {
+    grid-column: 5 / span 2;
+  }
+  
+  .call-us {
+    grid-column: 5 / span 2;
+  }
+  
+  .icon {
+    height: 80px;
+    margin: auto;
+  }
+  
+  .testimonial {
+    background-color: #f0f0f0;
+    color: #db6363;
+    font-family: Poppins;
+    font-size: 18px;
+    font-style: italic;
+    letter-spacing: 3.7px;
+    display: grid;  
+  }
+  
+  .one {
+    grid-column: 1 / span 3;
+    /*In the .one and .two rulesets, use grid-column again to have each <div> span three columns.*/
+  }
+  
+  .two {
+    grid-column: 4 / span 3;
+  }
+  
+  footer {
+    background-color: #db6363;
+    color: #ffffff;
+    font-family: Poppins;
+    font-size: 16px;
+    letter-spacing: 0.4px;
+    grid-column: 1 / 7;
+    display: grid;
+  }
