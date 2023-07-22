@@ -15,23 +15,29 @@ Finally, below our team object, use the .addGame() method to add a record of a n
 Log the team‘s _games property to check that our new game record was properly added.
 */
 
+// Step 1: Declare a const variable called team and set it to an empty object.
 const team = {
+    // Step 2: Add _players property and initialize it to an empty array.
     _players: [
       { firstName: 'XXXXX', lastName: 'Sanchez', age: 11 },
       { firstName: 'XXXX', lastName: 'Perez', age: 12 },
       { firstName: 'XXXX', lastName: 'Perez', age: 12 }
     ],
+    // Step 3: Add _games property and initialize it to an empty array.
     _games: [
       { opponent: 'Broncos', teamPoints: 42, opponentPoints: 27 },
       { opponent: 'Broncos', teamPoints: 42, opponentPoints: 27 },
       { opponent: 'Broncos', teamPoints: 42, opponentPoints: 27 }
     ],
+    // Step 4: Create a getter method called players to retrieve the _players property.
     get players() {
       return this._players;
     },
+    // Step 5: Create a getter method called games to retrieve the _games property.
     get games() {
       return this._games;
     },
+    // Step 6: Create a method addPlayer to add a new player to the team.
     addPlayer(firstName, lastName, age) {
       let player = {
         firstName: firstName,
@@ -40,6 +46,7 @@ const team = {
       };
       this._players.push(player);
     },
+    // Step 7: Create a method addGame to add a new game result to the team.
     addGame(opponent, teamPoints, opponentPoints) {
       let game = {
         opponent: opponent,
@@ -50,15 +57,15 @@ const team = {
     }
   };
   
-  // Add a new player using the addPlayer method
+  // Step 8: Add a new player using the addPlayer method
   team.addPlayer('Bugs', 'Bunny', 76);
   
-  // Log the team's players
+  // Step 9: Log the team's players to verify the new player was added.
   console.log(team.players);
   
-  // Add a new game using the addGame method
+  // Step 10: Add a new game using the addGame method
   team.addGame('Titans', 100, 98);
   
-  // Log the team's games
+  // Step 11: Log the team's games to verify the new game was added.
   console.log(team.games);
   
