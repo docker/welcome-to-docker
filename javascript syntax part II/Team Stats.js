@@ -9,22 +9,56 @@ Below the team object, let’s try out our new .addPlayer() method to add a new 
 Log the team‘s _players property to check that our new player was added.
 The scorekeeper has some new information for us! Create a method for adding game results called addGame that takes three parameters: newOpponent, newTeamPoints, newOpponentPoints.
 Inside the .addGame() method, create a game object by setting the three parameters to be the values for the object’s three properties: opponent, teamPoints, opponentPoints. Add the game object to the team‘s _games array.
+
+Finally, below our team object, use the .addGame() method to add a record of a new game. Our team played against the 'Titans' where we scored 100 points and the opponent scored 98 points.
+
+Log the team‘s _games property to check that our new game record was properly added.
 */
 
-const team = {};
-
-team._players = ['firstName', 'lastName', 'age']; 
-team._players.push(
-    {firstName: 'XXXX', lastName: 'Bunny', age: 76}  
-);
-
-team._games = ['opponent', 'teamPoints', 'opponentPoints'];
-team._games.push(
-    {opponent: 'YYYYY', teamPoints: 76, opponentPoints: 76}
-);
-
-team.addPlayer = function(firstName, lastName, age) {}
-
-team.addGame = function(opponent, teamPoints, opponentPoints) {}
-
-
+const team = {
+    _players: [
+      { firstName: 'XXXXX', lastName: 'Sanchez', age: 11 },
+      { firstName: 'XXXX', lastName: 'Perez', age: 12 },
+      { firstName: 'XXXX', lastName: 'Perez', age: 12 }
+    ],
+    _games: [
+      { opponent: 'Broncos', teamPoints: 42, opponentPoints: 27 },
+      { opponent: 'Broncos', teamPoints: 42, opponentPoints: 27 },
+      { opponent: 'Broncos', teamPoints: 42, opponentPoints: 27 }
+    ],
+    get players() {
+      return this._players;
+    },
+    get games() {
+      return this._games;
+    },
+    addPlayer(firstName, lastName, age) {
+      let player = {
+        firstName: firstName,
+        lastName: lastName,
+        age: age
+      };
+      this._players.push(player);
+    },
+    addGame(opponent, teamPoints, opponentPoints) {
+      let game = {
+        opponent: opponent,
+        teamPoints: teamPoints,
+        opponentPoints: opponentPoints
+      };
+      this._games.push(game);
+    }
+  };
+  
+  // Add a new player using the addPlayer method
+  team.addPlayer('Bugs', 'Bunny', 76);
+  
+  // Log the team's players
+  console.log(team.players);
+  
+  // Add a new game using the addGame method
+  team.addGame('Titans', 100, 98);
+  
+  // Log the team's games
+  console.log(team.games);
+  
