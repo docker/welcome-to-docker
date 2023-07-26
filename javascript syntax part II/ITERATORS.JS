@@ -33,3 +33,42 @@ const smallNumbers = bigNumbers.map(number => number / 100);
 console.log(smallNumbers);
 
 */
+
+/*Call the .filter() method on randomNumbers to return values that are less than 250. Save them to a new array called smallNumbers, declared with const.
+Now let’s work with an array of strings. Invoke .filter() on the favoriteWords array to return elements that have more than 7 characters. Save the returned array to a const variable named longFavoriteWords.
+
+
+const randomNumbers = [375, 200, 3.14, 7, 13, 852];
+
+// Call .filter() on randomNumbers below
+const smallNumbers = randomNumbers.filter(number => number < 250);
+console.log (smallNumbers.length);
+
+
+const favoriteWords = ['nostalgia', 'hyperbole', 'fervent', 'esoteric', 'serene'];
+
+
+// Call .filter() on favoriteWords below
+
+const longFavoriteWords = favoriteWords.filter(word => word.length > 7);
+
+console.log(longFavoriteWords);
+*/
+
+/*Invoke .findIndex() on the animals array to find the index of the element that has the value 'elephant' 
+and save the returned value to a const variable named foundAnimal.
+
+Let’s see if we can find the index of the first animal that starts with the letter 's'.
+
+
+const animals = ['hippo', 'tiger', 'lion', 'seal', 'cheetah', 'monkey', 'salamander', 'elephant'];
+
+const foundAnimal = animals.findIndex(animal => animal === 'elephant');
+
+Call .findIndex() on the animals array and return the index of the first element that starts with 's'. 
+Assign the returned value to a const variable named startsWithS.
+
+const startsWithS = animals.findIndex(animal => animal[0] === 's');
+console.log(foundAnimal);
+console.log(startsWithS);
+*/
