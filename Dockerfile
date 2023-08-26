@@ -1,23 +1,25 @@
-# Start your image with a node base image
-FROM node:18-alpine
+FROM ubuntu:latest
 
-# The /app directory should act as the main application directory
+RUN apt-get update && apt-get install -y git
+
 WORKDIR /app
 
-# Copy the app package and package-lock.json file
-COPY package*.json ./
+COPY . .
 
-# Copy local directories to the current local directory of our docker image (/app)
-COPY ./src ./src
-COPY ./public ./public
+RUN git config --global user.email "you@example.com" && \
+    git config --global user.name "Your Name" && \
+    git add . && \
+    git commit -m "commit message"
 
-# Install node packages, install serve, build the app, and remove dependencies at the end
-RUN npm install \
-    && npm install -g serve \
-    && npm run build \
-    && rm -fr node_modules
+CMD ["echo", "Hello, World!"]
+WORKDIR /app
 
-EXPOSE 3000
+COPY . .
 
-# Start the app using serve command
-CMD [ "serve", "-s", "build" ]
+RUN git config --global user.email "you@example.com" && \
+    git config --global user.name "Your Name" && \
+    git add . && \
+    git commit -m "commit message"
+
+CMD ["echo", "Hello, World!"]
+
