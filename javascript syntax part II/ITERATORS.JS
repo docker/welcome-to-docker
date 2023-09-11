@@ -114,14 +114,17 @@ const newSum = newNumbers.reduce((accumulator, currentValue) => {
 }, 10);
 console.log(newSum);
 */
+
+
+/*
 const words = ['unique', 'uncanny', 'pique', 'oxymoron', 'guise'];
 
 // Something is missing in the method call below
-/*
+
 console.log(words.some(() => {
   return word.length < 6;
 }));
-*/
+
 
 //correct
 console.log(words.some((word) => {
@@ -140,7 +143,42 @@ const interestingWords = words.filter(word => word.length > 5);
 console.log(interestingWords.every((word) => {
     return word.length > 5;
 }));
+*/
 
 
+const cities = ['Orlando', 'Dubai', 'Edinburgh', 'Chennai', 'Accra', 'Denver', 'Eskisehir', 'Medellin', 'Yokohama'];
+
+const nums = [1, 50, 75, 200, 350, 525, 1000];
+
+//  Choose a method that will return undefined
+//correct
+cities.forEach (city => console.log('Have you visited ' + city + '?'));
+
+//cities.method(city => console.log('Have you visited ' + city + '?'));
+
+// Choose a method that will return a new array
+
+//correct
+//const longCities = cities.filter(city => city.length > 7);
+
+// Choose a method that will return a single value
+//correct 
+
+/*const word = cities.reduce((acc, currVal) => {
+  return acc + currVal[0]
+}, "C");
+
+console.log(word)
+
+// Choose a method that will return a new array
+//correct 
+//const smallerNums = nums.method(num => num - 5);
+const smallerNums = nums.map(num => num - 5);
+
+// Choose a method that will return a boolean value
+//correct
+nums.some(num => num < 0);
+nums.method(num => num < 0);
+*/
 
 
