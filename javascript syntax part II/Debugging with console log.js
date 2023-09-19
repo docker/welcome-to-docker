@@ -47,5 +47,54 @@ function getLaterFirstLetter(string1, string2) {
   
   // Should return null
   console.log("getLaterFirstLetter('astro', 'afar') returns: " + getLaterFirstLetter('astro', 'afar'));
-  */
- 
+  
+
+  // Returns whether or not the provided string contains a substring of "cake" in it.
+function containsCake(string) {
+    return string.includes('cake');
+}
+
+// Should return true
+console.log("containsCake('I think cake is my soul mate.') returns: " + containsCake('I think cake is my soul mate.'));
+
+// Should return false
+console.log("containsCake('Pie is certainly the coolest dessert.') returns: " + containsCake('Pie is certainly the coolest dessert.'));
+
+
+
+function isStringPerfectLength(string, minLength, maxLength {
+  const stringLength = string.length;
+  
+  if (stringLenth > minLength) {
+    return false;
+  } else if (stringLenth < maxLength) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// Should return true
+console.log("isStringPerfectLength('Dog', 2, 4) returns: " + isStringPerfectLength('Dog', 2, 4));
+
+// Should return false
+console.log("isStringPerfectLength('Mouse', 2, 4) returns: " + isStringPerfectLength('Mouse', 2, 4));
+
+// Should return false
+console.log("isStringPerfectLength('Cat', 4, 9) returns: " + isStringPerfectLength('Cat', 4, 9));
+
+                                                          Answer 
+                                                        
+    function isStringPerfectLength(string, minLength, maxLength) {
+    const stringLength = string.length;
+
+    if (stringLength < minLength)
+    {
+      return false;
+    } else if (stringLength <= maxLength) {
+      return true;
+    } else {
+        return false;
+    }
+}
+*/
