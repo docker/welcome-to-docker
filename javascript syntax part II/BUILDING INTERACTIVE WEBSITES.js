@@ -57,6 +57,7 @@ const returnRandBase = () => {
   console.log(specimen1.willLikelySurvive()); // Check if specimen1 is likely to survive
   console.log(specimen2.willLikelySurvive()); // Check if specimen2 is likely to survive  
   
+  
 
   
       
