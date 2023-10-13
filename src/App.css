@@ -23,7 +23,7 @@
 }
 
 
-.fa {
+.fa-brands {
   padding: 20px;
   font-size: 30px;
   width: 50px;
@@ -32,13 +32,13 @@
   text-decoration: none;
 }
 
-.fa:hover {
+.fa-brands:hover {
   opacity: 0.7;
 }
 
 
 /* Twitter */
-.fa-twitter {
+.fa-x-twitter {
   background: #55ACEE;
   color: white;
 }
