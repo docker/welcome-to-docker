@@ -22,8 +22,7 @@
   color: #61dafb;
 }
 
-
-.fa {
+.fa-brands {
   padding: 20px;
   font-size: 30px;
   width: 50px;
@@ -32,25 +31,24 @@
   text-decoration: none;
 }
 
-.fa:hover {
+.fa-brands:hover {
   opacity: 0.7;
 }
 
-
 /* Twitter */
-.fa-twitter {
-  background: #55ACEE;
+.fa-x-twitter {
+  background: #55acee;
   color: white;
 }
 
 /* Linkedin */
 .fa-linkedin {
-  background: #55ACEE;
+  background: #55acee;
   color: white;
 }
 
 /* Reddit */
 .fa-reddit {
-  background: #55ACEE;
+  background: #55acee;
   color: white;
 }
