@@ -1,9 +1,6 @@
 # Start your image with a node base image
 FROM node:18-alpine as builder
 
-# Create an application directory
-RUN mkdir -p /app
-
 # The /app directory should act as the main application directory
 WORKDIR /app
 
