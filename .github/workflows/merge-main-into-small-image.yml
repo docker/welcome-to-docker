@@ -8,11 +8,14 @@ on:
 jobs:
   merge-main-into-small-image:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    timeout-minutes: 3
     
     steps:
+    - uses: actions/checkout@v4
     - name: Merge with main
-      if: github.event.pull_request.merged == true
       run: |
+        git fetch
         git checkout small-image
         git merge main --no-ff --no-edit
         git push origin small-image
