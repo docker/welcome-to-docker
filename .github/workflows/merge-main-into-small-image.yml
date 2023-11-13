@@ -17,6 +17,8 @@ jobs:
         fetch-depth: 0
     - name: Merge with main
       run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
         git fetch
         git checkout small-image
         git merge main --no-ff --no-edit
