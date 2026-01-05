@@ -1,5 +1,30 @@
 {
-    "excluded_patterns": [
+    "default": {
+        "default_prompt": "Enter your prompt here",
+        "default_include_all_files": true,
+        "default_include_entire_project_structure": true
+    },
+    "included_patterns": [
+        "build.gradle",
+        "settings.gradle",
+        "gradle.properties",
+        "pom.xml",
+        "Makefile",
+        "CMakeLists.txt",
+        "package.json",
+        "requirements.txt",
+        "Pipfile",
+        "Gemfile",
+        "composer.json",
+        ".editorconfig",
+        ".eslintrc.json",
+        ".eslintrc.js",
+        ".prettierrc",
+        ".babelrc",
+        ".dockerignore",
+        ".gitattributes",
+        ".stylelintrc",
+        ".npmrc",
         ".git",
         ".gitignore",
         "gradle",
@@ -119,33 +144,6 @@
         "*.lib",
         "*.a",
         "*.map",
-        ".npmrc"
-    ],
-    "default": {
-        "default_prompt": "Enter your prompt here",
-        "default_include_all_files": false,
-        "default_include_entire_project_structure": true
-    },
-    "included_patterns": [
-        "build.gradle",
-        "settings.gradle",
-        "gradle.properties",
-        "pom.xml",
-        "Makefile",
-        "CMakeLists.txt",
-        "package.json",
-        "requirements.txt",
-        "Pipfile",
-        "Gemfile",
-        "composer.json",
-        ".editorconfig",
-        ".eslintrc.json",
-        ".eslintrc.js",
-        ".prettierrc",
-        ".babelrc",
-        ".dockerignore",
-        ".gitattributes",
-        ".stylelintrc",
         ".npmrc"
     ]
 }
