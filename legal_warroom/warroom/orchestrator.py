@@ -1,214 +1,153 @@
 """
-Orchestrator — The Autonomous Legal War Game
+Orchestrator — entry point for the simulation.
 
-Drives the full adversarial pipeline:
-  1. Ingest document segments.
-  2. Route each segment to the Plaintiff Agent (Red Team) for attack.
-  3. Route the original text + attack report to the Defense Agent (Blue Team).
-  4. Collect SegmentReports for the final output.
-
-Supports:
-  - Sequential processing (safe, predictable, lower concurrency cost).
-  - Parallel processing (faster for large documents; uses concurrent API calls).
+Responsibilities:
+  • Load and segment the document.
+  • For each segment, run the multi-round adversarial loop.
+  • Support sequential and parallel (thread-pool) processing.
+  • Accept any LLMProvider(s) — Anthropic, Ollama, or mixed.
 """
 
 from __future__ import annotations
 
-import asyncio
 import concurrent.futures
 from typing import Callable, List, Optional
 
-import anthropic
 from rich.console import Console
-from rich.progress import (
-    BarColumn,
-    MofNCompleteColumn,
-    Progress,
-    SpinnerColumn,
-    TextColumn,
-    TimeElapsedColumn,
-)
 from rich.table import Table
 
-from .agents import plaintiff, defense
 from .document.processor import DocumentSegment, load_and_segment
-from .models.schemas import SegmentReport
+from .loop.adversarial import run_adversarial_loop
+from .models.schemas import IterativeSegmentReport
+from .providers.base import LLMProvider
 
 console = Console()
 
 
-# ---------------------------------------------------------------------------
-# Public entry point
-# ---------------------------------------------------------------------------
-
 def run_simulation(
     document_path: str,
+    plaintiff_provider: LLMProvider,
+    defense_provider: LLMProvider,
     words_per_segment: int = 800,
+    max_rounds: int = 3,
+    convergence_threshold: int = 2,
     parallel: bool = False,
     max_workers: int = 3,
-    on_segment_complete: Optional[Callable[[SegmentReport], None]] = None,
-) -> List[SegmentReport]:
+    on_segment_complete: Optional[Callable[[IterativeSegmentReport], None]] = None,
+) -> List[IterativeSegmentReport]:
     """
-    Run the full Legal War Game simulation on a document.
+    Run the full Legal War Game simulation.
 
     Args:
-        document_path:       Path to a .pdf or .txt file.
-        words_per_segment:   Soft word-count cap per segment (default 800).
-        parallel:            If True, process segments concurrently.
-        max_workers:         Max parallel threads when parallel=True.
-        on_segment_complete: Optional callback invoked after each segment.
+        document_path:         Path to .pdf or .txt file.
+        plaintiff_provider:    LLMProvider for the Red Team.
+        defense_provider:      LLMProvider for the Blue Team (can be same).
+        words_per_segment:     Soft word-count cap per chunk (default 800).
+        max_rounds:            Max adversarial rounds per segment (default 3).
+        convergence_threshold: Stop early when severity ≤ this (default 2).
+        parallel:              Process segments concurrently via thread pool.
+        max_workers:           Thread-pool size when parallel=True.
+        on_segment_complete:   Optional callback after each segment.
 
     Returns:
-        List of SegmentReport, one per document segment.
+        List[IterativeSegmentReport], one per segment, in document order.
     """
-    client = anthropic.Anthropic()
-
     console.rule("[bold cyan]AUTONOMOUS LEGAL WAR GAME — SIMULATION ALPHA[/bold cyan]")
-    console.print(f"\n[bold]Document:[/bold] {document_path}")
+    console.print(
+        f"\n[bold]Document:[/bold]          {document_path}\n"
+        f"[bold]Plaintiff model:[/bold]   {plaintiff_provider.model}\n"
+        f"[bold]Defense model:[/bold]     {defense_provider.model}\n"
+        f"[bold]Max rounds/segment:[/bold] {max_rounds}\n"
+        f"[bold]Parallel:[/bold]          {parallel}\n"
+    )
 
-    # ── 1. Ingest ──────────────────────────────────────────────────────────
+    # ── Segment ─────────────────────────────────────────────────────────────
     with console.status("[yellow]Ingesting and segmenting document…"):
         segments = load_and_segment(document_path, words_per_segment)
 
     console.print(
-        f"[green]✓[/green] Segmented into [bold]{len(segments)}[/bold] clause blocks "
-        f"(~{words_per_segment} words each)\n"
+        f"[green]✓[/green] Segmented into [bold]{len(segments)}[/bold] clause blocks\n"
     )
-
     _print_segment_table(segments)
 
-    # ── 2. Run adversarial pipeline ────────────────────────────────────────
-    reports: List[SegmentReport] = []
-
+    # ── Run ─────────────────────────────────────────────────────────────────
     if parallel and len(segments) > 1:
-        reports = _run_parallel(client, segments, max_workers, on_segment_complete)
-    else:
-        reports = _run_sequential(client, segments, on_segment_complete)
-
-    return reports
+        return _run_parallel(
+            plaintiff_provider, defense_provider,
+            segments, max_rounds, convergence_threshold,
+            max_workers, on_segment_complete,
+        )
+    return _run_sequential(
+        plaintiff_provider, defense_provider,
+        segments, max_rounds, convergence_threshold,
+        on_segment_complete,
+    )
 
 
 # ---------------------------------------------------------------------------
-# Sequential execution
+# Sequential
 # ---------------------------------------------------------------------------
 
 def _run_sequential(
-    client: anthropic.Anthropic,
+    pp: LLMProvider,
+    dp: LLMProvider,
     segments: List[DocumentSegment],
-    on_complete: Optional[Callable[[SegmentReport], None]],
-) -> List[SegmentReport]:
-    reports: List[SegmentReport] = []
-
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        MofNCompleteColumn(),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
-        task = progress.add_task("Processing segments…", total=len(segments))
-
-        for seg in segments:
-            progress.update(task, description=f"[cyan]{seg.segment_id}[/cyan] — Red Team attacking…")
-            report = _process_segment(client, seg)
-            reports.append(report)
-            if on_complete:
-                on_complete(report)
-            progress.advance(task)
-
+    max_rounds: int,
+    threshold: int,
+    on_complete: Optional[Callable],
+) -> List[IterativeSegmentReport]:
+    reports: List[IterativeSegmentReport] = []
+    for i, seg in enumerate(segments, 1):
+        console.rule(
+            f"[cyan]Segment {i}/{len(segments)} — {seg.segment_id}[/cyan]",
+            style="dim",
+        )
+        report = run_adversarial_loop(pp, dp, seg, max_rounds, threshold)
+        reports.append(report)
+        if on_complete:
+            on_complete(report)
     return reports
 
 
 # ---------------------------------------------------------------------------
-# Parallel execution
+# Parallel
 # ---------------------------------------------------------------------------
 
 def _run_parallel(
-    client: anthropic.Anthropic,
+    pp: LLMProvider,
+    dp: LLMProvider,
     segments: List[DocumentSegment],
+    max_rounds: int,
+    threshold: int,
     max_workers: int,
-    on_complete: Optional[Callable[[SegmentReport], None]],
-) -> List[SegmentReport]:
-    """
-    Process segments in parallel using a thread pool.
-    The Anthropic SDK is thread-safe; each call creates its own HTTP session.
-    """
+    on_complete: Optional[Callable],
+) -> List[IterativeSegmentReport]:
     console.print(
-        f"[bold yellow]Parallel mode:[/bold yellow] up to {max_workers} concurrent API calls.\n"
+        f"[bold yellow]Parallel mode:[/bold yellow] "
+        f"up to {max_workers} concurrent segments.\n"
     )
+    results: dict[str, IterativeSegmentReport] = {}
 
-    results: dict[str, SegmentReport] = {}
+    def _process(seg: DocumentSegment) -> IterativeSegmentReport:
+        return run_adversarial_loop(pp, dp, seg, max_rounds, threshold)
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        MofNCompleteColumn(),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
-        task = progress.add_task("Processing segments (parallel)…", total=len(segments))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_map = {executor.submit(_process, seg): seg for seg in segments}
+        for future in concurrent.futures.as_completed(future_map):
+            seg = future_map[future]
+            try:
+                report = future.result()
+                results[seg.segment_id] = report
+                if on_complete:
+                    on_complete(report)
+            except Exception as exc:
+                console.print(f"[red]ERROR[/red] {seg.segment_id}: {exc}")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_seg = {
-                executor.submit(_process_segment, client, seg): seg
-                for seg in segments
-            }
-            for future in concurrent.futures.as_completed(future_to_seg):
-                seg = future_to_seg[future]
-                try:
-                    report = future.result()
-                    results[seg.segment_id] = report
-                    if on_complete:
-                        on_complete(report)
-                except Exception as exc:
-                    console.print(
-                        f"[red]ERROR[/red] {seg.segment_id}: {exc}"
-                    )
-                finally:
-                    progress.advance(task)
-
-    # Return in original document order
-    ordered = [results[seg.segment_id] for seg in segments if seg.segment_id in results]
-    return ordered
+    return [results[seg.segment_id] for seg in segments if seg.segment_id in results]
 
 
 # ---------------------------------------------------------------------------
-# Single-segment pipeline
-# ---------------------------------------------------------------------------
-
-def _process_segment(
-    client: anthropic.Anthropic,
-    seg: DocumentSegment,
-) -> SegmentReport:
-    """Run the full Red → Blue pipeline for a single document segment."""
-
-    # ── Red Team attack ──────────────────────────────────────────────────
-    plaintiff_analysis = plaintiff.run(
-        client=client,
-        clause_text=seg.text,
-        segment_id=seg.segment_id,
-    )
-
-    # ── Blue Team defence ────────────────────────────────────────────────
-    defense_analysis = defense.run(
-        client=client,
-        clause_text=seg.text,
-        plaintiff_analysis=plaintiff_analysis,
-        segment_id=seg.segment_id,
-    )
-
-    return SegmentReport(
-        segment_id=seg.segment_id,
-        original_text=seg.text,
-        plaintiff_analysis=plaintiff_analysis,
-        defense_analysis=defense_analysis,
-    )
-
-
-# ---------------------------------------------------------------------------
-# Display helpers
+# Display
 # ---------------------------------------------------------------------------
 
 def _print_segment_table(segments: List[DocumentSegment]) -> None:
@@ -216,11 +155,8 @@ def _print_segment_table(segments: List[DocumentSegment]) -> None:
     table.add_column("ID", style="cyan", no_wrap=True)
     table.add_column("Words", justify="right")
     table.add_column("Preview", max_width=80)
-
     for seg in segments:
-        word_count = len(seg.text.split())
         preview = seg.text[:120].replace("\n", " ") + ("…" if len(seg.text) > 120 else "")
-        table.add_row(seg.segment_id, str(word_count), preview)
-
+        table.add_row(seg.segment_id, str(len(seg.text.split())), preview)
     console.print(table)
     console.print()

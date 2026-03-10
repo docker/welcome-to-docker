@@ -1,21 +1,15 @@
 """
 Plaintiff Agent — Red Team
 
-Receives a document segment and returns a PlaintiffAnalysis with
-prioritised attack vectors graded 1-5.
-
-Uses claude-opus-4-6 with adaptive thinking and structured outputs
-so the Orchestrator receives machine-readable, schema-validated data.
+Attacks a given clause (original OR a previously hardened rewrite) and
+returns a structured PlaintiffAnalysis.  Accepts any LLMProvider so it
+works identically with Anthropic or Ollama.
 """
 
 from __future__ import annotations
 
-import anthropic
 from ..models.schemas import PlaintiffAnalysis
-
-# ---------------------------------------------------------------------------
-# System prompt (your exact prompt, hardened for structured output)
-# ---------------------------------------------------------------------------
+from ..providers.base import LLMProvider
 
 PLAINTIFF_SYSTEM = """\
 You are the Plaintiff Counsel Agent (Red Team) in the Autonomous Legal War Game.
@@ -26,8 +20,7 @@ exploit, break, or extract punitive damages from the provided contract language.
 JURISDICTION: Standard US corporate law, contract law precedents, and Delaware \
 Court of Chancery standards.
 
-OBJECTIVE: Perform a ruthless, exhaustive analysis of the provided clause or \
-section.
+OBJECTIVE: Perform a ruthless, exhaustive analysis of the provided clause.
 
 EXECUTION DIRECTIVES:
 1. HUNT FOR AMBIGUITY — Identify poorly defined terms, vague timelines, \
@@ -36,15 +29,15 @@ EXECUTION DIRECTIVES:
    party is exposed to uncapped financial risk, breach of warranty, or \
    third-party liabilities.
 3. STRESS-TEST EDGE CASES — Formulate highly improbable but legally plausible \
-   "black swan" scenarios the current language fails to protect against. \
-   Think regulatory intervention, force majeure, insolvency events, \
-   jurisdictional conflicts, and successor liability.
+   "black swan" scenarios the current language fails to protect against.
 4. ATTACK DEFINITIONS — Challenge every defined term. If it is absent, \
-   over-broad, or inconsistent with usage elsewhere, flag it.
+   over-broad, or internally inconsistent, flag it.
 
-OUTPUT: You MUST respond in the exact JSON structure specified. Do not add \
-prose outside the JSON. Do not fabricate specific case citations or docket \
-numbers. Reference legal doctrines and principles only.
+If this is a re-attack on an already-hardened clause: look for NEW \
+vulnerabilities introduced by the rewrite, and re-evaluate whether previously \
+identified vulnerabilities were truly closed.
+
+Do not fabricate specific case citations. Reference legal doctrines only.
 
 SEVERITY SCALE:
   1 = Minor ambiguity, negligible consequence
@@ -56,40 +49,34 @@ SEVERITY SCALE:
 """
 
 
-# ---------------------------------------------------------------------------
-# Agent call
-# ---------------------------------------------------------------------------
-
 def run(
-    client: anthropic.Anthropic,
+    provider: LLMProvider,
     clause_text: str,
     segment_id: str,
+    round_number: int = 1,
 ) -> PlaintiffAnalysis:
     """
-    Send the clause to the Plaintiff Agent and return a validated
-    PlaintiffAnalysis.
+    Attack a clause and return a validated PlaintiffAnalysis.
 
     Args:
-        client:       Initialised Anthropic client.
-        clause_text:  The raw contract text to attack.
-        segment_id:   Identifier used for logging/reporting.
-
-    Returns:
-        PlaintiffAnalysis — schema-validated Pydantic model.
+        provider:     Any LLMProvider (Anthropic, Ollama, …).
+        clause_text:  The contract text to attack. May be the original clause
+                      or a previously hardened rewrite (in round 2+).
+        segment_id:   Identifier used for logging.
+        round_number: Current round number (1 = first attack on original text).
     """
+    label = "ORIGINAL CLAUSE" if round_number == 1 else f"HARDENED CLAUSE (round {round_number - 1} output)"
+
     user_message = (
-        f"[DOCUMENT SEGMENT: {segment_id}]\n\n"
+        f"[SEGMENT: {segment_id} | ROUND: {round_number}]\n\n"
+        f"━━━ {label} (to be attacked) ━━━\n"
         f"{clause_text}\n\n"
         "Analyse the above clause and produce your attack report."
     )
 
-    response = client.messages.parse(
-        model="claude-opus-4-6",
-        max_tokens=8192,
-        thinking={"type": "adaptive"},
+    return provider.complete_structured(
         system=PLAINTIFF_SYSTEM,
         messages=[{"role": "user", "content": user_message}],
-        output_format=PlaintiffAnalysis,
+        schema=PlaintiffAnalysis,
+        max_tokens=8192,
     )
-
-    return response.parsed_output

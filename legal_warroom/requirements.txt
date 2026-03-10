@@ -1,4 +1,5 @@
 anthropic>=0.40.0
+openai>=1.0.0          # Required for Ollama provider (OpenAI-compatible API)
 pydantic>=2.0.0
 pdfplumber>=0.10.0
 pypdf>=4.0.0
