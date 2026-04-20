@@ -1,0 +1,71 @@
+## Docker MCP Gateway + Playwright Troubleshooting Guide
+
+### 1) Incident summary
+Two separate failures were identified:
+- **Playwright MCP startup failure** (`initialize: EOF`) after image pull failure.
+- **Gateway JSON parse failure** (`invalid character 'c' looking for beginning of value`) caused by sending shell text to a JSON-RPC stdin stream.
+
+### 2) Root causes
+- The Playwright image digest was missing locally due to a transient registry/DNS pull failure.
+- `docker mcp gateway run` expects JSON-RPC on stdin; plain commands are invalid input.
+
+### 3) Fix implemented
+- Pull required image:
+  - `docker pull mcp/playwright@sha256:b23ebe2ab08a54fffade79d2fceb4d36e1e17196c9d2e20fc4c4e91b0b6e28bc`
+- Verify server/tool availability:
+  - `docker mcp server list`
+  - `docker mcp tools list`
+- Verify tool execution:
+  - `docker mcp tools call mcp-find query=playwright`
+
+### 4) Standard operating model
+- **Terminal A:** `docker mcp gateway run` only.
+- **Terminal B:** all `docker mcp ...` commands.
+- Never type shell commands into gateway stdin.
+
+### 5) Troubleshooting checklist
+
+#### A. `initialize: EOF` / Playwright startup failure
+1. Check image:
+   - `docker image inspect mcp/playwright@sha256:b23ebe2ab08a54fffade79d2fceb4d36e1e17196c9d2e20fc4c4e91b0b6e28bc`
+2. If missing, pull again:
+   - `docker pull mcp/playwright@sha256:b23ebe2ab08a54fffade79d2fceb4d36e1e17196c9d2e20fc4c4e91b0b6e28bc`
+3. Re-check:
+   - `docker mcp tools list`
+   - `docker mcp server list`
+
+#### B. Pull/DNS/network issues
+1. Test Hub access:
+   - `docker pull hello-world:latest`
+2. Inspect Docker network/proxy config:
+   - `docker info`
+3. Retry the Playwright pull once connectivity stabilizes.
+
+#### C. JSON parser errors in gateway
+1. Stop gateway (`Ctrl+C`).
+2. Restart in a dedicated terminal.
+3. Ensure only JSON-RPC messages go to gateway stdin.
+
+#### D. JSON-RPC communication diagnostics
+1. Validate handshake:
+   - Send `initialize` first, then `tools/list`, then `tools/call`.
+2. Validate payload shape:
+   - Required keys: `jsonrpc`, `id`, `method` (and `params` when needed).
+3. Validate correlation:
+   - Response `id` must match request `id`.
+4. Check stream contamination:
+   - No shell prompts, banners, or plain text in stdin stream.
+5. Isolate client vs gateway:
+   - If `docker mcp tools call mcp-find query=playwright` works, gateway/server are healthy; client integration is likely the issue.
+6. Reduce concurrency during diagnosis:
+   - Send one request at a time to rule out ordering issues.
+7. Capture raw request/response logs:
+   - Compare failing payloads to a known-good call.
+
+### 6) Quick health check
+Run in a normal shell (not gateway stdin):
+- `docker mcp server list`
+- `docker mcp tools list`
+- `docker mcp tools call mcp-find query=playwright`
+
+If all pass, the MCP gateway + Playwright setup is healthy.
