@@ -69,3 +69,26 @@ Run in a normal shell (not gateway stdin):
 - `docker mcp tools call mcp-find query=playwright`
 
 If all pass, the MCP gateway + Playwright setup is healthy.
+
+### 7) Integration verification (final)
+Run this sequence to verify end-to-end integration:
+- `docker mcp server list`
+- `docker mcp tools list`
+- `docker mcp tools call mcp-find query=playwright`
+- `docker mcp tools call browser_navigate url=https://example.com`
+- `docker mcp tools call browser_take_screenshot`
+
+Expected outcomes:
+- Server list shows `playwright` enabled.
+- Tools list includes Playwright browser tools.
+- `mcp-find` returns `playwright` (and may also return `playwright-mcp-server` from catalog).
+- `browser_navigate` reports URL `https://example.com/` and title `Example Domain`.
+- `browser_take_screenshot` returns `image/png` output and a generated artifact path.
+
+### 8) Common command mistakes
+- Incorrect:
+  - `docker mcp tools call mcp-find query_name=playwright`
+- Correct:
+  - `docker mcp tools call mcp-find query=playwright`
+- Error symptom for wrong argument:
+  - `calling "tools/call": query parameter is required`
