@@ -1,0 +1,13 @@
+version: "1"
+
+# This file demonstrates liftwork's "file wins" behaviour. The dashboard's
+# Application form for this app is intentionally configured with WRONG values
+# (port 9999, replicas 1, health_check /wrong) to prove the deploy uses these
+# values from the file instead.
+deploy:
+  port: 3000
+  replicas: 2
+  health_check:
+    path: /
+  env:
+    LIFTWORK_FROM_FILE: "yes"
