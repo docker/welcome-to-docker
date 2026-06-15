@@ -13,7 +13,7 @@ COPY ./public ./public
 
 # Install node packages, install serve, build the app, and remove dependencies at the end
 COPY .npmrc .
-RUN npm install \
+RUN npm ci \
     && npm install -g serve@latest \
     && npm run build \
     && rm -fr node_modules
